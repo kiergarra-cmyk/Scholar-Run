@@ -3,11 +3,11 @@
 const env = require('./env');
 
 const settings = {
-  username: env.db.user,
-  password: env.db.password,
-  database: env.db.name,
-  host: env.db.host,
-  port: env.db.port,
+  username: 'postgres',
+  password: 'postgres',
+  database: 'scholar_run',
+  host: '127.0.0.1',
+  port: '5432',
   dialect: 'postgres',
   logging: false,
   // Track seeders in a table, the same way migrations are tracked,

@@ -1,9 +1,7 @@
 {
   "name": "scholar-run-api",
   "version": "1.0.0",
-  "description": "Scholar’s Run is a campus-based quiz survival and strategy tournament where players
-navigate university locations, answer location-specific questions, manage their Energy, and
-make strategic route choices to survive and achieve the highest possible score.",
+  "description":  "Scholar Run is a campus-based quiz survival and strategy tournament ",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
