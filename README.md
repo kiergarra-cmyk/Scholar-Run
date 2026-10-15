@@ -1,10 +1,10 @@
-# [Your Game Title] API
+# [Scholar Run] API
 
-Backend API for **[Your Game Title]**, a tournament game for the SorSU Bulan Campus library.
+Backend API for **[Scholar_Run]**, a tournament game for the SorSU Bulan Campus library.
 CS 313 Software Engineering 1, A.Y. 2026-2027.
 
-- Developer: [Your full name] ([your GitHub username]), BSCS [3-1 or 3-2]
-- Group and game concept: [Group name]
+- Developer[Kier_Garra] ([kiergarra-cmyk]), BSCS [3-1]
+- Group and game concept: [Group 3]
 
 This is my own build of my group's game concept. Every commit in this repository was made by me, with Git, on my own computer or in my own Codespace.
 
