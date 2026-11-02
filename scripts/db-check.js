@@ -1,4 +1,4 @@
-// Counts the rows in every table of your database.
+ // Counts the rows in every table of your database.
 // Run with:  npm run db:check
 const { QueryTypes } = require('sequelize');
 const { sequelize } = require('../src/models');

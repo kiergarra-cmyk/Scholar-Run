@@ -1,8 +1,7 @@
 const { Router } = require('express');
-const gameInfoController = require('../controllers/game-info.controller');
-
 const router = Router();
+const questionSetsController = require('../controllers/question-sets.controller');
 
-router.get('/', gameInfoController.getGameInfo);
+router.post('/', questionSetsController.createQuestionSet);
 
 module.exports = router;
