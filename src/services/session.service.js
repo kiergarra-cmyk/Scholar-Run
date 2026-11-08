@@ -1,53 +1,86 @@
-const { GameSession, Player } = require('../models');
-const sessionService = require('./session.service');
-const { conflict } = require('../errors/app-error');
+// Hub Contract rule 5: six digits. 100000 to 999999 never starts with 0.
+function randomCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+async function create(questionSetId, user) {
+  const questionSet = await questionSetRepository.findById(questionSetId);
+  if (!questionSet) {
+    throw notFound('QUESTION_SET_NOT_FOUND', `No question set has the id ${questionSetId}.`);
+  }
+  const mayUse = questionSet.host_id === user.user_id || questionSet.is_public
+    || user.role === 'ADMIN';
+  if (!mayUse) throw forbidden('This question set belongs to another host.');
+
+  // Try up to 5 times in case of a random code collision
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
+    try {
+      return await sessionRepository.create({
+        set_id: questionSet.set_id, host_id: user.user_id, join_pin: randomCode(),
+      });
+    } catch (error) {
+      if (constraintOf(error) !== 'game_sessions_join_pin_key') throw error;
+    }
+  }
+  throw new Error('Could not find a free join code after 5 attempts.');
+}
+
+const sessionRepository = require('../repositories/session.repository');
+const questionSetRepository = require('../repositories/question-set.repository');
+const { notFound, forbidden, conflict } = require('../errors/app-error');
 const { constraintOf } = require('../errors/db-errors');
 
-async function findSeat(sessionId, userId) {
-  return Player.findOne({ where: { session_id: sessionId, user_id: userId } });
+// --- Step 5.1: Create session & generate 6-digit code ---
+function randomCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
 }
 
-async function countBySession(sessionId) {
-  return Player.count({ where: { session_id: sessionId } });
-}
-
-async function markSeen(player) {
-  return player.update({ last_seen_at: new Date() });
-}
-
-async function join(code, nickname, user) {
-  const session = await sessionService.findOrFail(code);
-
-  const seat = await findSeat(session.session_id, user.user_id);
-  if (seat) {
-    await markSeen(seat);
-    return { session, player: seat, created: false };
+async function create(questionSetId, user) {
+  const questionSet = await questionSetRepository.findById(questionSetId);
+  if (!questionSet) {
+    throw notFound('QUESTION_SET_NOT_FOUND', `No question set has the id ${questionSetId}.`);
   }
+  const mayUse = questionSet.host_id === user.user_id || questionSet.is_public
+    || user.role === 'ADMIN';
+  if (!mayUse) throw forbidden('This question set belongs to another host.');
 
-  if (session.status === 'CLOSED') throw conflict('SESSION_ENDED', 'This game has ended.');
-  if (session.status !== 'LOBBY') {
-    throw conflict('SESSION_NOT_JOINABLE', 'This game has already started.');
-  }
-  
-  const seatsTaken = await countBySession(session.session_id);
-  if (seatsTaken >= session.max_players) throw conflict('SESSION_FULL', 'This game is full.');
-
-  try {
-    const player = await Player.create({
-      session_id: session.session_id,
-      user_id: user.user_id,
-      nickname,
-      last_seen_at: new Date(),
-    });
-    return { session, player, created: true };
-  } catch (error) {
-    if (constraintOf(error) === 'uq_one_seat') {
-      const existing = await findSeat(session.session_id, user.user_id);
-      return { session, player: existing, created: false };
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
+    try {
+      return await sessionRepository.create({
+        set_id: questionSet.set_id, host_id: user.user_id, join_pin: randomCode(),
+      });
+    } catch (error) {
+      if (constraintOf(error) !== 'game_sessions_join_pin_key') throw error;
     }
-    throw error;
   }
+  throw new Error('Could not find a free join code after 5 attempts.');
 }
 
-module.exports = { findSeat, countBySession, markSeen, join };
-```[cite: 1]
+// --- Step 5.2: Change game status ---
+const NEXT_STATUS = {
+  LOBBY: ['RUNNING', 'CLOSED'],
+  RUNNING: ['CLOSED'],
+  CLOSED: [],
+};
+
+async function findOrFail(code) {
+  const session = await sessionRepository.findByCode(code);
+  if (!session) throw notFound('SESSION_NOT_FOUND', `No game session has the code ${code}.`);
+  return session;
+}
+
+async function changeStatus(code, status, user) {
+  const session = await findOrFail(code);
+  if (session.host_id !== user.user_id && user.role !== 'ADMIN') {
+    throw forbidden('This game belongs to another host.');
+  }
+  if (!NEXT_STATUS[session.status].includes(status)) {
+    throw conflict('INVALID_STATUS_CHANGE', `A ${session.status} game cannot become ${status}.`);
+  }
+  const changes = { status };
+  if (status === 'RUNNING') changes.started_at = new Date();
+  if (status === 'CLOSED') changes.ended_at = new Date();
+  return sessionRepository.update(session, changes);
+}
+
+module.exports = { create, changeStatus, findOrFail };

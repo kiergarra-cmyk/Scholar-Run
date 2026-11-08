@@ -13,4 +13,10 @@ router.use('/sessions', sessionsRoutes);
 router.use('/runs', runsRoutes);
 router.use('/leaderboard', leaderboardRoutes);
 
+// ... existing setup ...
+router.use(currentUser);
+
+router.use('/question-sets', require('./question-set.routes'));
+router.use('/sessions', require('./session.routes')); // <-- Add this line here
+
 module.exports = router;
