@@ -2,16 +2,35 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('question_choices', {
-      choice_id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+      choice_id: { 
+        type: Sequelize.INTEGER, 
+        primaryKey: true, 
+        autoIncrement: true 
+      },
       question_id: { 
         type: Sequelize.INTEGER, 
         allowNull: false,
         references: { model: 'questions', key: 'question_id' },
         onDelete: 'CASCADE'
       },
-      choice_text: { type: Sequelize.STRING(255), allowNull: false },
-      choice_order: { type: Sequelize.INTEGER, allowNull: false },
-      is_correct: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
+      choice_text: { 
+        type: Sequelize.STRING(255), 
+        allowNull: false 
+      },
+      choice_order: { 
+        type: Sequelize.INTEGER, 
+        allowNull: false 
+      },
+      is_correct: { 
+        type: Sequelize.BOOLEAN, 
+        allowNull: false, 
+        defaultValue: false 
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      }
     });
   },
   async down(queryInterface, Sequelize) {
