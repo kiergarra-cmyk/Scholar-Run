@@ -17,15 +17,6 @@ This is my own build of my group's game concept. Every commit in this repository
 | Database | PostgreSQL 16 or newer |
 | ORM and migrations | Sequelize 6 with sequelize-cli |
 
-## Setup
-
-```bash
-git clone [https://github.com/kiergarra-cmyk/Scholar-Run.git](https://github.com/kiergarra-cmyk/Scholar-Run.git)
-cd Scholar-Run
-npm install
-
-
-
 ## Tables
 
 1. `users` — Stores user account and authentication information
@@ -39,3 +30,10 @@ npm install
 9. `question_choices` — Stores multiple-choice options for each question
 10. `runs` — Records player game runs within sessions
 11. `run_locations` — Tracks location progress and status during a player's run
+
+
+## Setup
+```bash
+git clone [https://github.com/kiergarra-cmyk/Scholar-Run.git](https://github.com/kiergarra-cmyk/Scholar-Run.git)
+cd Scholar-Run
+npm install
