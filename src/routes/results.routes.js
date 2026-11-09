@@ -1,10 +1,8 @@
-// Hub Contract rule 7: the Library Game Hub reads finished games here.
-const { Router } = require('express');
-const hubKey = require('../middlewares/hub-key');
-const controller = require('../controllers/results.controller');
+const express = require('express');
+const router = express.Router();
+const { getTournamentResults } = require('../controllers/results.controller');
 
-const router = Router();
-
-router.get('/', hubKey, controller.getResults);
+// Define the results endpoint route
+router.get('/results', getTournamentResults);
 
 module.exports = router;

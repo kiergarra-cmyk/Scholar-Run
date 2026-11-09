@@ -4,7 +4,15 @@ module.exports = {
     await queryInterface.createTable('locations', {
       location_id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
       name: { type: Sequelize.STRING(100), allowNull: false },
-      energy_reward: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 }
+      energy_reward: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
     });
   },
   async down(queryInterface, Sequelize) {

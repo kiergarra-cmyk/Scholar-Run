@@ -6,11 +6,14 @@ module.exports = {
       {
         school_id: '2099-0001',
         name: 'John Doe',
-        email: 'johndoe.test',
+        full_name: 'John Doe',
+        role: 'player',
+        email: 'johndoe@test.com',
+        password_hash: 'hashedpassword123', // Make sure this matches your schema requirements if needed
         createdAt: new Date(),
         updatedAt: new Date()
-      },
-      // Add other demo users here as needed
+      }
+      // Add more users here if needed
     ], {});
   },
 

@@ -1,23 +1,32 @@
-// Translates between HTTP and the service. No SQL, no business rules.
-const gameInfo = require('../config/game-info');
-const resultsService = require('../services/results.service');
+const { TournamentSession, Host, SessionPlayer, Run } = require('../models');
 
-async function getResults(req, res) {
-  // Optional: ?since=2026-10-20T00:00:00Z returns only games that ended after that moment.
-  const { since } = req.query;
-  if (since !== undefined && Number.isNaN(Date.parse(since))) {
-    return res.status(400).json({
-      error: { code: 'INVALID_SINCE', message: 'since must be a date and time, for example 2026-10-20T00:00:00Z.' },
+async function getTournamentResults(req, res) {
+  try {
+    // Optional: Verify Hub API Key header if required by your project spec
+    const apiKey = req.headers['x-hub-key'];
+    if (apiKey !== process.env.HUB_API_KEY) {
+      return res.status(401).json({ error: 'Unauthorized: Invalid or missing API key' });
+    }
+
+    // Fetch closed/completed tournament sessions with related data
+    const results = await TournamentSession.findAll({
+      where: { status: 'CLOSED' },
+      include: [
+        { model: Host, attributes: ['host_id'] },
+        { model: SessionPlayer }
+      ]
     });
-  }
 
-  const results = await resultsService.listFinishedGames(since ? new Date(since) : null);
-  res.status(200).json({
-    game: gameInfo.slug,
-    developer: gameInfo.developer,
-    generated_at: new Date().toISOString(),
-    results,
-  });
+    return res.status(200).json({
+      success: true,
+      data: results
+    });
+  } catch (error) {
+    console.error('Error fetching results:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
 }
+
+module.exports = { getTournamentResults };
 
 module.exports = { getResults };
