@@ -33,6 +33,7 @@ This is my own build of my group's game concept. Every commit in this repository
 
 
 ## Setup
+
 ```bash
 git clone [https://github.com/kiergarra-cmyk/Scholar-Run.git](https://github.com/kiergarra-cmyk/Scholar-Run.git)
 cd Scholar-Run
