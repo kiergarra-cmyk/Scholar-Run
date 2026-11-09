@@ -9,14 +9,12 @@ const leaderboardRoutes = require('./leaderboard.routes');
 
 // Register routes cleanly
 router.use('/health', healthRoutes);
-router.use('/sessions', sessionsRoutes);
+router.use('/sessions', sessionsRouter);
 router.use('/runs', runsRoutes);
 router.use('/leaderboard', leaderboardRoutes);
 
-// ... existing setup ...
+// Additional authenticated or modular routes
 router.use(currentUser);
-
 router.use('/question-sets', require('./question-set.routes'));
-router.use('/sessions', require('./session.routes')); // <-- Add this line here
 
 module.exports = router;
