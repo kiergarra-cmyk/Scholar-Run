@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Scholar Run is a campus-based quiz survival and strategy tournament ",
   "main": "src/server.js",
+  
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
